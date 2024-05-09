@@ -2,12 +2,9 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 
-from .models import Job, JobApplication
+from .models import Job, JobApplication, PaymentTransaction
 from django.contrib.auth.models import User
 from .models import UserProfile
-
-
-# User = get_user_model()
 
 
 class CustomAuthenticationForm(forms.Form):

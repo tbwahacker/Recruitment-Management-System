@@ -1,0 +1,181 @@
+<!-- payment_page.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <!-- Add any CSS or styling links here -->
+    <style>
+        /* Add custom styles here */
+        .payment-form {
+            margin-top: 50px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 5px;
+        }
+        .modal-header h2 {
+            margin-top: 0;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-form">
+        <h1>Payment Page</h1>
+        <form method="post" id="payment-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="amount">Amount:</label>
+                <input type="number" id="amount" name="amount" placeholder="Enter amount" required readonly value="500">
+            </div>
+            <div class="form-group">
+                <label for="mobile">Mobile Phone:</label>
+                <input type="text" id="mobile" name="mobile" placeholder="Enter your mobile phone number eg. (255685750593)" required>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn-pay-now">Pay Now</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal for success/failure messages -->
+    <div id="payment-message" class="text-center mt-3"></div>
+
+{#    <script>#}
+{#        // Get the modal#}
+{#        var modal = document.getElementById("payment-modal");#}
+{##}
+{#        // Get the <span> element that closes the modal#}
+{#        var span = document.getElementsByClassName("close")[0];#}
+{##}
+{#        // When the user clicks the button, open the modal#}
+{#        var btn = document.getElementById("btn-pay-now");#}
+{#        btn.onclick = function() {#}
+{#            modal.style.display = "block";#}
+{#        }#}
+{##}
+{#        // When the user clicks on <span> (x), close the modal#}
+{#        span.onclick = function() {#}
+{#            modal.style.display = "none";#}
+{#        }#}
+{##}
+{#        // When the user clicks anywhere outside of the modal, close it#}
+{#        window.onclick = function(event) {#}
+{#            if (event.target == modal) {#}
+{#                modal.style.display = "none";#}
+{#            }#}
+{#        }#}
+{#    </script>#}
+{#<script>#}
+{#    $(document).ready(function() {#}
+{#        $('#payment-form').submit(function(event) {#}
+{#            event.preventDefault();#}
+{#            $.ajax({#}
+{#                type: 'POST',#}
+{#                url: '{% url 'payment_page' %}',#}
+{#                data: $(this).serialize(),#}
+{#                success: function(response) {#}
+{#                    if (response.success) {#}
+{#                        // If payment successful, redirect to job application page#}
+{#                        window.location.href = response.redirect_url;#}
+{#                    } else {#}
+{#                        // If payment failed, display failure message in a popup#}
+{#                        alert(response.message);#}
+{#                    }#}
+{#                },#}
+{#                error: function(xhr, status, error) {#}
+{#                    console.error(xhr.responseText);#}
+{#                }#}
+{#            });#}
+{#        });#}
+{#    });#}
+{#</script>#}
+<script>
+    $(document).ready(function() {
+        $('#payment-form').submit(function(event) {
+            event.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'payment_page' %}',
+                data: $(this).serialize(),
+                success: function(response) {
+                    // Update the content of the payment message element
+                    $('#payment-message').text(response.message);
+                    // Check if payment was successful or not
+                    if (response.success) {
+                        $('#payment-message').removeClass('text-danger').addClass('text-success');
+                    } else {
+                        $('#payment-message').removeClass('text-success').addClass('text-danger');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+
+
+</body>
+</html>

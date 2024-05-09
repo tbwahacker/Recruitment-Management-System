@@ -1,11 +1,16 @@
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from .models import Job, JobApplication
+from django.urls import reverse
+
+from recruitment_management_system import settings
+from .models import Job, JobApplication, PaymentTransaction
 from .forms import JobForm, JobApplicationForm
 from django.contrib.auth.models import User
 from .forms import UserForm, UserProfileForm
 from django.contrib.auth.decorators import login_required
+from azampay import Azampay
+from dotenv import load_dotenv
 
 
 def create_user(request):
@@ -92,10 +97,13 @@ def job_detail(request, job_id):
     return render(request, 'job_portal/job_detail.html', {'job': job})
 
 
+@login_required
 def job_application(request, user_id, job_id):
+    job = Job.objects.get(pk=job_id)
+    user = User.objects.get(pk=user_id)
+    user_has_paid = PaymentTransaction.objects.filter(user=request.user).exists()
+
     if request.method == 'POST':
-        job = Job.objects.get(pk=job_id)
-        user = User.objects.get(pk=user_id)
         form = JobApplicationForm(request.POST, request.FILES)
         if form.is_valid():
             form.instance.job = job
@@ -104,8 +112,8 @@ def job_application(request, user_id, job_id):
             return redirect('home', job_id=job_id)
     else:
         form = JobApplicationForm()
-    return render(request, 'job_portal/job_application.html', {'form': form})
 
+    return render(request, 'job_portal/job_application.html', {'form': form, 'user_has_paid': user_has_paid})
 
 def job_search(request):
     query = request.GET.get('q', '')
@@ -119,3 +127,81 @@ def job_search(request):
         'jobs': jobs,
     }
     return render(request, 'job_portal/job_list.html', context)
+
+
+# def payment_page(request):
+#     if request.method == 'POST':
+#         form = PaymentForm(request.POST)
+#         if form.is_valid():
+#             amount = form.cleaned_data['amount']
+#             user = request.user
+#             # Save payment transaction to the database
+#             PaymentTransaction.objects.create(user=user, amount=amount)
+#             return render(request, 'payment_success.html')
+#         else:
+#             return render(request, 'payment_failed.html')
+#     else:
+#         form = PaymentForm()
+#     return render(request, 'job_portal/payment_page.html', {'form': form})
+
+
+@login_required
+def payment_page(request):
+    if request.method == 'POST':
+        amount = request.POST.get('amount')
+        mobile = request.POST.get('mobile')
+        user = request.user
+
+        response = azamPayResponse(mobile, amount)
+        print(response)
+        if response.get('success'):
+
+            # Save payment transaction to the database
+            payment = PaymentTransaction.objects.create(user=user, amount=amount)
+
+            # Check if payment was successfully saved
+            if payment:
+                data = {
+                    'success': True,
+                    'Transaction ID': f"{response.get('transactionId')}",
+                    'message': f"{response.get('message')}"
+                }
+            else:
+                data = {
+                    'success': False,
+                    'message': f"Payment failed. {response.get('message')}"
+                }
+            return JsonResponse(data)
+        else:
+            data = {
+                'success': False,
+                'message': f"Payment failed. {response.get('message')}"
+            }
+            return JsonResponse(data)
+    return render(request, 'job_portal/payment_page.html')
+
+
+def azamPayResponse(mobile, amount):
+    # Load environment variables
+    load_dotenv()
+
+    # in production use
+    # azampay = Azampay(app_name='<app_name>', client_id='<client_id>', client_secret='<client_secret>', sandbox=False)
+
+    # Initialize AzamPay
+    gateway = Azampay(
+        app_name=settings.APP_NAME,
+        client_id=settings.CLIENT_ID,
+        client_secret=settings.CLIENT_SECRET,
+        x_api_key=settings.X_API_KEY,
+    )
+
+    # print(gateway.supported_mnos())
+
+    checkout_response = gateway \
+        .mobile_checkout(amount=f'{amount}',
+                         mobile=f'{mobile}',
+                         external_id=f'123456789',
+                         provider='Airtel',
+                         currency='TZS')
+    return checkout_response

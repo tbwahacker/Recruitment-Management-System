@@ -24,3 +24,10 @@ class JobApplication(models.Model):
     candidate_name = models.CharField(max_length=100, blank=True, null=True)
     resume = models.FileField(upload_to='resumes/')
     cover_letter = models.FileField(upload_to='cover_letters/')
+
+
+class PaymentTransaction(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    mobile = models.BigIntegerField(blank=True, null=True)
+    # Add more fields as needed

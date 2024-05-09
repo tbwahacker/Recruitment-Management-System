@@ -1,23 +1,81 @@
+{#{% extends 'base.html' %}#}
+{##}
+{#{% block content %}#}
+{#<div class="container">#}
+{#    <h1 class="my-4">Apply for Job</h1>#}
+{#    {% if user_has_paid %}#}
+{#        <!-- Show the job application form if the user has already paid -->#}
+{#        <form method="post" enctype="multipart/form-data">#}
+{#            {% csrf_token %}#}
+{#            <div class="form-group">#}
+{#                <label for="id_name">Full Name:</label>#}
+{#                {{ form.candidate_name }}#}
+{#            </div>#}
+{#            <div class="form-group">#}
+{#                <label for="id_cover_letter">Cover Letter (PDF):</label>#}
+{#                {{ form.cover_letter }}#}
+{#            </div>#}
+{#            <div class="form-group">#}
+{#                <label for="id_resume">Resume (PDF):</label>#}
+{#                {{ form.resume }}#}
+{#            </div>#}
+{#            <button type="submit" class="btn btn-primary">Submit Application</button>#}
+{#        </form>#}
+{#    {% else %}#}
+{#        <!-- Show a message and a button to proceed to payment if the user hasn't paid -->#}
+{#        <p>You need to pay to submit your job application.</p>#}
+{#        <button class="btn btn-primary" onclick="redirectToPayment()">Proceed to Payment</button>#}
+{#    {% endif %}#}
+{#</div>#}
+{##}
+{#<!-- JavaScript to redirect to payment page -->#}
+{#<script>#}
+{#    function redirectToPayment() {#}
+{#        // Redirect the user to the payment page#}
+{#        // Implement the logic to redirect the user to the payment page#}
+{#        // For example:#}
+{#        window.location.href = "{% url 'payment_page'%}";#}
+{#    }#}
+{#</script>#}
+{#{% endblock %}#}
+
 {% extends 'base.html' %}
 
 {% block content %}
 <div class="container">
     <h1 class="my-4">Apply for Job</h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="id_name">Full Name:</label>
-            {{ form.candidate_name }}
-        </div>
-        <div class="form-group">
-            <label for="id_cover_letter">Cover Letter (PDF):</label>
-            {{ form.cover_letter }}
-        </div>
-        <div class="form-group">
-            <label for="id_resume">Resume (PDF):</label>
-            {{ form.resume }}
-        </div>
-        <button type="submit" class="btn btn-primary">Submit Application</button>
-    </form>
+    {% if user_has_paid %}
+        <!-- Show the job application form if the user has already paid -->
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_name">Full Name:</label>
+                {{ form.candidate_name }}
+            </div>
+            <div class="form-group">
+                <label for="id_cover_letter">Cover Letter (PDF):</label>
+                {{ form.cover_letter }}
+            </div>
+            <div class="form-group">
+                <label for="id_resume">Resume (PDF):</label>
+                {{ form.resume }}
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Application</button>
+        </form>
+    {% else %}
+        <!-- Show a message and a button to proceed to payment if the user hasn't paid -->
+        <p>You need to pay to submit your job application.</p>
+        <button class="btn btn-primary" onclick="redirectToPayment()">Proceed to Payment</button>
+    {% endif %}
 </div>
+
+<!-- JavaScript to redirect to payment page -->
+<script>
+    function redirectToPayment() {
+        // Redirect the user to the payment page
+        // Implement the logic to redirect the user to the payment page
+        // For example:
+        window.location.href = "{% url 'payment_page'%}";
+    }
+</script>
 {% endblock %}
