@@ -7,7 +7,11 @@ Welcome to task Recruitment Management App ! This project requires several depen
 1. Python with django and Django Template
 2. Azam Pay Mobile Integrations (Testing Mode / SandBoxed)
 
-## Installation
+# For Hosted Project, you can reach it through
+http://62.169.25.50:8000/
+
+
+## For Local Installation
 
 ### Step 1: Clone the Repository
 
@@ -32,5 +36,7 @@ For windows use simple
 py manage.py makemigrations
 py manage.py migrate
 py manage.py runserver
+
+
 
 
