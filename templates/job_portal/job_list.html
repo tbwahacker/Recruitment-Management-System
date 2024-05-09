@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Search form -->
+<div class="container mt-5">
+  <h1 class="mb-4">Job Search</h1>
+  <div class="row justify-content-center mb-4">
+    <div class="col-md-6">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Search for jobs" aria-label="Search for jobs" aria-describedby="search-button" id="search-input">
+        <div class="input-group-append">
+          <button class="btn btn-primary" type="button" id="search-button">Search</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Job Listings -->
+  <h2>Job Listings</h2>
+  <div id="job-listings">
+    {% for job in jobs %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">{{ job.title }}</h5>
+        <p class="card-text">{{ job.description }}</p>
+        <a href="{% url 'job_detail' job_id=job.id %}" class="btn btn-primary">View Details</a>
+        {% if user.is_authenticated %}
+        <a href="{% url 'job_application' user_id=user.id job_id=job.id %}" class="btn btn-primary">Apply Now</a>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+  $(document).ready(function() {
+    // Hide job listings initially
+    $('#job-listings').hide();
+
+    // Search button click event
+    $('#search-button').click(function() {
+      var query = $('#search-input').val().trim();
+console.error('heree');
+      // Perform AJAX request to fetch search results
+      $.ajax({
+        url: '/job/search/',
+        method: 'GET',
+        data: {q: query},
+        success: function(response) {
+          // Show search results
+          $('#job-listings').html(response);
+          $('#job-listings').show();
+        },
+        error: function(xhr, status, error) {
+          console.error(error);
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

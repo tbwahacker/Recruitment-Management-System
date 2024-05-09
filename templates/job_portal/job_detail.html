@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ job.title }}</h1>
+<p>{{ job.description }}</p>
+<p><strong>Requirements:</strong> {{ job.requirements }}</p>
+<p><strong>Location:</strong> {{ job.location }}</p>
+{% if user.is_authenticated %}
+    <a href="{% url 'job_application' user_id=user.id job_id=job.id %}" class="btn btn-primary">Apply Now</a>
+{% else %}
+    <a href="{% url 'login' %}" class="btn btn-primary">Login to Apply</a>
+{% endif %}
+{% endblock %}

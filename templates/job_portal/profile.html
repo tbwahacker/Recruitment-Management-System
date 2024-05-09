@@ -1,0 +1,21 @@
+<!-- templates/profile.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Profile</h2>
+        <p>Welcome, {{ user.username }}!</p>
+        <p>You have successfully logged in , Now press the 'Go to Apply Jobs' button to apply for a job you want</p>
+        <!-- Display other user information here -->
+        <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
+        <a href="{% url 'home'  %}" class="btn btn-primary">Go to Apply Jobs</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+<!-- templates/job_portal/user_created.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}User Created{% endblock %}
+
+{% block content %}
+<h2>User Created Successfully</h2>
+<p><a href="{% url 'create_user' %}">Create Another User</a></p>
+{% endblock %}

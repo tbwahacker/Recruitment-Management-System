@@ -1,0 +1,41 @@
+<!-- templates/job_portal/admin_profile.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profile</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Admin Profile</h2>
+        <p>Welcome, {{ user.username }}!</p>
+        <h3>Job Applications:</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Job Title</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for application in job_applications %}
+                <tr>
+                    <td>{{ application.user.first_name }} {{ application.user.last_name }}</td>
+                    <td>{{ application.job.title }}</td>
+                    <td>
+                        <a href="{{ application.resume.url }}" class="btn btn-primary" target="_blank">View Cover Letter</a>
+                        <a href="{{ application.resume.url }}" class="btn btn-primary" target="_blank">View Resume</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'create_job' %}" class="btn btn-success">Create New Job</a>
+        <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
+    </div>
+</body>
+</html>
