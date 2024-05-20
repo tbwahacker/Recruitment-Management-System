@@ -6,14 +6,15 @@
   <h1 class="mb-4">Job Search</h1>
   <div class="row justify-content-center mb-4">
     <div class="col-md-6">
-      <div class="input-group">
-        <input type="text" class="form-control" placeholder="Search for jobs" aria-label="Search for jobs" aria-describedby="search-button" id="search-input">
-        <div class="input-group-append">
-          <button class="btn btn-primary" type="button" id="search-button">Search</button>
+        <div class="d-flex justify-content-center">
+            <form method="GET" action="{% url 'home' %}" id="search-form">
+                <input type="text" name="q" id="search-input" class="form-control rounded-pill" placeholder="Search for jobs.." aria-label="Search for jobs.." aria-describedby="search-button" value="{{ request.GET.q|default_if_none:'' }}">
+            </form>
         </div>
-      </div>
     </div>
   </div>
+
+
 
   <!-- Job Listings -->
   <h2>Job Listings</h2>
@@ -37,29 +38,56 @@
 
 {% block script %}
 <script>
+
+    // Debounce function
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            const context = this;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+    }
+
   $(document).ready(function() {
     // Hide job listings initially
     $('#job-listings').hide();
 
+    $('#search-input').on('input', debounce(function() {
+            var query = $(this).val();
+            if (query.length > 2) {
+                $.ajax({
+                    url: '{% url "product-page" %}',
+                    type: 'GET',
+                    data: {
+                        q: query
+                    },
+                    success: function(data) {
+                        $('body').html($(data).find('body').html());
+                    }
+                });
+            }
+        }, 300)); // 300 milliseconds debounce delay
+
     // Search button click event
-    $('#search-button').click(function() {
-      var query = $('#search-input').val().trim();
-console.error('heree');
-      // Perform AJAX request to fetch search results
-      $.ajax({
-        url: '/job/search/',
-        method: 'GET',
-        data: {q: query},
-        success: function(response) {
-          // Show search results
-          $('#job-listings').html(response);
-          $('#job-listings').show();
-        },
-        error: function(xhr, status, error) {
-          console.error(error);
-        }
-      });
-    });
+{#    $('#search-button').click(function() {#}
+{#      var query = $('#search-input').val().trim();#}
+{#console.error('heree');#}
+{#      // Perform AJAX request to fetch search results#}
+{#      $.ajax({#}
+{#        url: '/job/search/',#}
+{#        method: 'GET',#}
+{#        data: {q: query},#}
+{#        success: function(response) {#}
+{#          // Show search results#}
+{#          $('#job-listings').html(response);#}
+{#          $('#job-listings').show();#}
+{#        },#}
+{#        error: function(xhr, status, error) {#}
+{#          console.error(error);#}
+{#        }#}
+{#      });#}
+{#    });#}
   });
 </script>
 {% endblock %}

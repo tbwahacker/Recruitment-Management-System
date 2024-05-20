@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -88,7 +89,17 @@ def create_job(request):
 
 
 def job_list(request):
-    jobs = Job.objects.all()
+    query = request.GET.get('q')
+    if query:
+        jobs = Job.objects.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(requirements__icontains=query) |
+            Q(location__icontains=query)
+        )
+    else:
+        jobs = Job.objects.all()
+
     return render(request, 'job_portal/job_list.html', {'jobs': jobs})
 
 
