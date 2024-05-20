@@ -19,18 +19,27 @@
   <!-- Job Listings -->
   <h2>Job Listings</h2>
   <div id="job-listings">
-    {% for job in jobs %}
-    <div class="card mb-3">
-      <div class="card-body">
-        <h5 class="card-title">{{ job.title }}</h5>
-        <p class="card-text">{{ job.description }}</p>
-        <a href="{% url 'job_detail' job_id=job.id %}" class="btn btn-primary">View Details</a>
-        {% if user.is_authenticated %}
-        <a href="{% url 'job_application' user_id=user.id job_id=job.id %}" class="btn btn-primary">Apply Now</a>
-        {% endif %}
-      </div>
-    </div>
+    {% if jobs %}
+        {% for job in jobs %}
+             <div class="card mb-3">
+             <div class="card-body">
+             <h5 class="card-title">{{ job.title }}</h5>
+             <p class="card-text">{{ job.description }}</p>
+             <a href="{% url 'job_detail' job_id=job.id %}" class="btn btn-primary">View Details</a>
+             {% if user.is_authenticated %}
+               <a href="{% url 'job_application' user_id=user.id job_id=job.id %}" class="btn btn-primary">Apply Now</a>
+             {% endif %}
+             </div>
+             </div>
     {% endfor %}
+    {% else %}
+        <div class="card mb-3">
+             <div class="card-body" >
+             <h6>No Job Found.</h6>
+             </div>
+        </div>
+    {% endif %}
+
   </div>
 </div>
 
